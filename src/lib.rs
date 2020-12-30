@@ -2,6 +2,7 @@ use std::thread::{self, JoinHandle};
 use std::process::{Command, Stdio};
 use std::sync::mpsc::{self, Sender, Receiver};
 
+mod task_message;
 pub struct Task<'a> {
 	name: &'a [u8],
 	command: &'a [u8],
