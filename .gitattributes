@@ -1,0 +1,5 @@
+*.md text eol=lf
+*.rs text eol=lf
+.git* text eol=lf
+*.toml text eol=lf
+*.code-workspace text=lf
