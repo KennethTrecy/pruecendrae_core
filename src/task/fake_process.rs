@@ -1,12 +1,15 @@
 /// Represents the fake process
 pub struct FakeProcess;
 
+use std::ops::Range;
+const SAMPLE: Range<u8> = ('a' as u8)..('z' as u8);
+
 use std::io::Result;
 use crate::task::process::Process;
 
 impl Process for FakeProcess {
 	fn read(&mut self, buffer: &mut [u8]) -> Result<usize> {
-		for (buffer, sample) in buffer.iter_mut().zip(START..END) {
+		for (buffer, sample) in buffer.iter_mut().zip(SAMPLE) {
 			*buffer = sample;
 		}
 
@@ -16,7 +19,7 @@ impl Process for FakeProcess {
 
 #[cfg(test)]
 mod t {
-	use super::{END, FakeProcess, Process, START};
+	use super::{FakeProcess, Process, SAMPLE};
 
 	#[test]
 	fn can_read() {
@@ -25,7 +28,7 @@ mod t {
 
 		let result = process.read(&mut buffer);
 
-		assert_eq!(buffer.to_vec(), (START..END).take(20).collect::<Vec<u8>>());
+		assert_eq!(buffer.to_vec(), (SAMPLE).take(20).collect::<Vec<u8>>());
 		assert_eq!(result.unwrap(), 20);
 	}
 }
