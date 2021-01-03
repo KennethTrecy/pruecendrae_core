@@ -6,6 +6,7 @@ use crate::response::Response;
 mod child;
 mod process;
 mod run_command;
+mod fake_process;
 mod parse_command;
 
 /// Represents a task that can be stored and managed.
