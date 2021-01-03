@@ -9,7 +9,7 @@ use crate::task::process::Process;
 
 impl Process for FakeProcess {
 	fn read(&mut self, buffer: &mut [u8]) -> Result<usize> {
-		for (buffer, sample) in buffer.iter_mut().zip(SAMPLE) {
+		for (buffer, sample) in buffer.iter_mut().zip(SAMPLE.into_iter().cycle()) {
 			*buffer = sample;
 		}
 
