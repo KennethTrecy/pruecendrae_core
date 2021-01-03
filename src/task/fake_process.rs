@@ -28,9 +28,9 @@ impl Process for FakeProcess {
 	fn terminate(&mut self) -> Result<()> {
 		if self.program == "request" {
 			let first_argument = self.arguments.pop().unwrap();
-			if first_argument == "success termination" {
+			if first_argument == "success_termination" {
 				Ok(())
-			} else if first_argument == "error termination" {
+			} else if first_argument == "error_termination" {
 				Err(Error::new(ErrorKind::InvalidInput, "Program was already terminated."))
 			} else {
 				unimplemented!()
@@ -59,7 +59,7 @@ mod t {
 	#[test]
 	fn can_be_terminated_with_success() {
 		let mut process = FakeProcess::new(String::from("request"), vec![
-			String::from("success termination")
+			String::from("success_termination")
 		]);
 
 		let result = process.terminate();
@@ -70,7 +70,7 @@ mod t {
 	#[test]
 	fn can_be_terminated_with_error() {
 		let mut process = FakeProcess::new(String::from("request"), vec![
-			String::from("error termination")
+			String::from("error_termination")
 		]);
 
 		let result = process.terminate();
