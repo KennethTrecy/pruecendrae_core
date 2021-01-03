@@ -45,21 +45,21 @@ impl<'a> Task<'a> {
 		let (program, arguments) = parse_command(command);
 
 		let thread = thread::spawn(move || {
-			let mut command = run_command(program, arguments);
+			let mut process = run_command(program, arguments);
 
 			for request in receiver.iter() {
 				let response;
 				match request {
 					Request::Output(max_output_size) => {
 						let mut output = vec![0; max_output_size];
-						let read_size = command.read(&mut output).unwrap();
+						let read_size = process.read(&mut output).unwrap();
 						let output = (&output[0..read_size]).to_vec();
 						response = Response::Output(output);
 					},
-					Request::Terminate => {
-						match command.terminate() {
-							Ok(()) => response = Response::SuccessTermination,
-							Err(_) => response = Response::ErrorTermination
+					Request::Stop => {
+						match process.stop() {
+							Ok(()) => response = Response::SuccessStop,
+							Err(_) => response = Response::FailedStop
 						}
 					}
 				}

@@ -10,7 +10,7 @@ impl Process for Child {
 		read_result
 	}
 
-	fn terminate(&mut self) -> Result<()> {
+	fn stop(&mut self) -> Result<()> {
 		self.kill()
 	}
 }

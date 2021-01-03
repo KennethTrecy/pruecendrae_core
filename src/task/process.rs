@@ -6,5 +6,5 @@ pub trait Process {
 	fn read(&mut self, _: &mut [u8]) -> Result<usize>;
 
 	/// Stops the process.
-	fn terminate(&mut self) -> Result<()>;
+	fn stop(&mut self) -> Result<()>;
 }

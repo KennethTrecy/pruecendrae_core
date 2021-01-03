@@ -27,21 +27,21 @@ mod t {
 	}
 
 	#[test]
-	pub fn can_request_success_termination() {
-		let task = Task::new(b"test", b"request success_termination");
-		let expected_reponse = Response::SuccessTermination;
+	pub fn can_request_success_stop() {
+		let task = Task::new(b"test", b"request success_stop");
+		let expected_reponse = Response::SuccessStop;
 
-		let response = task.request(Request::Terminate);
+		let response = task.request(Request::Stop);
 
 		assert_eq!(response, expected_reponse);
 	}
 
 	#[test]
-	pub fn can_request_error_termination() {
-		let task = Task::new(b"test", b"request error_termination");
-		let expected_reponse = Response::ErrorTermination;
+	pub fn can_request_error_stop() {
+		let task = Task::new(b"test", b"request error_stop");
+		let expected_reponse = Response::FailedStop;
 
-		let response = task.request(Request::Terminate);
+		let response = task.request(Request::Stop);
 
 		assert_eq!(response, expected_reponse);
 	}

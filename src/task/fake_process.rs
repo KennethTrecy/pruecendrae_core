@@ -25,13 +25,13 @@ impl Process for FakeProcess {
 		Ok(buffer.len())
 	}
 
-	fn terminate(&mut self) -> Result<()> {
+	fn stop(&mut self) -> Result<()> {
 		if self.program == "request" {
 			let first_argument = self.arguments.pop().unwrap();
-			if first_argument == "success_termination" {
+			if first_argument == "success_stop" || first_argument == "success_kill" {
 				Ok(())
-			} else if first_argument == "error_termination" {
-				Err(Error::new(ErrorKind::InvalidInput, "Program was already terminated."))
+			} else if first_argument == "error_stop" {
+				Err(Error::new(ErrorKind::InvalidInput, "Program was already stopped."))
 			} else {
 				unimplemented!()
 			}
@@ -59,10 +59,10 @@ mod t {
 	#[test]
 	fn can_be_terminated_with_success() {
 		let mut process = FakeProcess::new(String::from("request"), vec![
-			String::from("success_termination")
+			String::from("success_stop")
 		]);
 
-		let result = process.terminate();
+		let result = process.stop();
 
 		assert_eq!(result.unwrap(), ());
 	}
@@ -70,10 +70,10 @@ mod t {
 	#[test]
 	fn can_be_terminated_with_error() {
 		let mut process = FakeProcess::new(String::from("request"), vec![
-			String::from("error_termination")
+			String::from("error_stop")
 		]);
 
-		let result = process.terminate();
+		let result = process.stop();
 
 		assert_eq!(result.unwrap_err().kind(), ErrorKind::InvalidInput);
 	}
