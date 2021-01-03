@@ -20,6 +20,6 @@ pub fn run_command(program: String, arguments: Vec<String>) -> impl Process {
 
 	#[cfg(test)]
 	{
-		FakeProcess
+		FakeProcess::new(program, arguments)
 	}
 }
