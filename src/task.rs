@@ -1,9 +1,9 @@
 use std::thread::{self, JoinHandle};
-use std::process::{Command, Stdio};
 use std::sync::mpsc::{self, Sender, Receiver};
 use crate::request::Request;
 use crate::response::Response;
 
+mod run_command;
 mod parse_command;
 
 /// Represents a task that can be stored and managed.
@@ -15,6 +15,7 @@ pub struct Task<'a> {
 	receiver: Receiver<Response>
 }
 
+use run_command::run_command;
 use parse_command::parse_command;
 
 impl<'a> Task<'a> {
@@ -37,13 +38,7 @@ impl<'a> Task<'a> {
 		let (program, arguments) = parse_command(command);
 
 		let thread = thread::spawn(move || {
-			let mut command = Command::new(program)
-				.args(&arguments)
-				.stdout(Stdio::piped())
-				.stdin(Stdio::piped())
-				.stderr(Stdio::piped())
-				.spawn()
-				.unwrap();
+			let mut command = run_command(program, arguments);
 
 			for request in receiver.iter() {
 				let response;
