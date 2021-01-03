@@ -5,6 +5,7 @@ use crate::response::Response;
 
 mod child;
 mod process;
+mod request;
 mod run_command;
 mod fake_process;
 mod parse_command;
