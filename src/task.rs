@@ -3,6 +3,7 @@ use std::sync::mpsc::{self, Sender, Receiver};
 use crate::request::Request;
 use crate::response::Response;
 
+mod child;
 mod process;
 mod run_command;
 mod parse_command;
@@ -18,6 +19,7 @@ pub struct Task<'a> {
 
 use run_command::run_command;
 use parse_command::parse_command;
+use process::Process;
 
 impl<'a> Task<'a> {
 	/// Creates a Task and runs the command.
@@ -46,12 +48,7 @@ impl<'a> Task<'a> {
 				match request {
 					Request::Output => {
 						let mut output = [0; 80];
-						if let Some(mut child) = command.stdout {
-							use std::io::Read;
-							child.read(&mut output).unwrap();
-							command.stdout = Some(child);
-						}
-
+						command.read(&mut output).unwrap();
 						response = Response::Output(output.to_vec());
 					}
 				}
