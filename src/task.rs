@@ -53,6 +53,9 @@ impl<'a> Task<'a> {
 						let read_size = command.read(&mut output).unwrap();
 						let output = (&output[0..read_size]).to_vec();
 						response = Response::Output(output);
+					},
+					Request::Terminate => {
+						unimplemented!()
 					}
 				}
 

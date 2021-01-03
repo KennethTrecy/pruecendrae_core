@@ -1,3 +1,4 @@
 pub enum Request {
-	Output(usize)
+	Output(usize),
+	Terminate
 }
