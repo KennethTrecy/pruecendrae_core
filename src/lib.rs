@@ -8,6 +8,7 @@ mod response;
 pub use response::Response;
 pub use request::Request;
 
+/// Represents a task that can be stored and managed.
 pub struct Task<'a> {
 	name: &'a [u8],
 	command: &'a [u8],
@@ -17,6 +18,7 @@ pub struct Task<'a> {
 }
 
 impl<'a> Task<'a> {
+	/// Creates a Task and runs the command.
 	pub fn new(name: &'a [u8], command: &'a [u8]) -> Self {
 		let (exsender, inreceiver) = mpsc::channel();
 		let (insender, exreceiver) = mpsc::channel();
