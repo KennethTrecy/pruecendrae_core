@@ -16,7 +16,7 @@ mod t {
 
 	#[test]
 	pub fn can_request_output() {
-		let task = Task::new(b"request", b"output");
+		let task = Task::new(b"test", b"request output");
 		let max_output_size = 10;
 		let expected_response_content = SAMPLE.into_iter().cycle().take(max_output_size).collect();
 		let expected_reponse = Response::Output(expected_response_content);
