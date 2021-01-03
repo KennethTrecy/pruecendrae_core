@@ -1,10 +1,8 @@
+/// Represents the fake process
 pub struct FakeProcess;
 
 use std::io::Result;
 use crate::task::process::Process;
-
-const START: u8 = 'a' as u8;
-const END: u8 = 'z' as u8;
 
 impl Process for FakeProcess {
 	fn read(&mut self, buffer: &mut [u8]) -> Result<usize> {
