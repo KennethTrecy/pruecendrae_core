@@ -15,6 +15,10 @@ impl Process for FakeProcess {
 
 		Ok(buffer.len())
 	}
+
+	fn terminate(&mut self) -> Result<()> {
+		Ok(())
+	}
 }
 
 #[cfg(test)]
@@ -30,5 +34,14 @@ mod t {
 
 		assert_eq!(buffer.to_vec(), (SAMPLE).take(20).collect::<Vec<u8>>());
 		assert_eq!(result.unwrap(), 20);
+	}
+
+	#[test]
+	fn can_be_stopped_successfully() {
+		let mut process = FakeProcess;
+
+		let result = process.terminate();
+
+		assert_eq!(result.unwrap(), ())
 	}
 }

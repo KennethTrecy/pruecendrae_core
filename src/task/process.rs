@@ -4,4 +4,7 @@ use std::io::Result;
 pub trait Process {
 	/// Reads the output of the process
 	fn read(&mut self, _: &mut [u8]) -> Result<usize>;
+
+	/// Stops the process.
+	fn terminate(&mut self) -> Result<()>;
 }

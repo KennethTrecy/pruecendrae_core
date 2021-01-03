@@ -9,4 +9,8 @@ impl Process for Child {
 		self.stdout = Some(stdout);
 		read_result
 	}
+
+	fn terminate(&mut self) -> Result<()> {
+		self.kill()
+	}
 }
