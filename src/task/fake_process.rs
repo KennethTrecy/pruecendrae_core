@@ -2,7 +2,7 @@
 pub struct FakeProcess;
 
 use std::ops::Range;
-const SAMPLE: Range<u8> = ('a' as u8)..('z' as u8);
+pub const SAMPLE: Range<u8> = ('a' as u8)..('z' as u8);
 
 use std::io::Result;
 use crate::task::process::Process;
