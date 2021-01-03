@@ -47,10 +47,10 @@ impl<'a> Task<'a> {
 			for request in receiver.iter() {
 				let response;
 				match request {
-					Request::Output => {
-						let mut output = [0; 80];
-						let size = command.read(&mut output).unwrap();
-						let output = (&output[0..size]).to_vec();
+					Request::Output(max_output_size) => {
+						let mut output = vec![0; max_output_size];
+						let read_size = command.read(&mut output).unwrap();
+						let output = (&output[0..read_size]).to_vec();
 						response = Response::Output(output);
 					}
 				}

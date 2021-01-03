@@ -1,3 +1,3 @@
 pub enum Request {
-	Output
+	Output(usize)
 }
