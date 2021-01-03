@@ -33,33 +33,11 @@ impl<'a> Task<'a> {
 		sender: Sender<TaskMessage>,
 		receiver: Receiver<TaskMessage>
 	) -> JoinHandle<()> {
-		let mut command_to_execute = None;
-		let mut command_arguments = Vec::new();
-		let mut start = 0;
-		let mut end = 0;
-		let command_length = command.len();
-
-		while end <= command_length {
-			if end == command_length && command[end] == ' ' as u8 {
-				let fragment = &command[start..end];
-				let fragment = String::from_utf8_lossy(&fragment[..]).into_owned();
-
-				match command_to_execute {
-					Some(_) => command_arguments.push(fragment),
-					None => command_to_execute = Some(fragment)
-				}
-
-				end += 1;
-				start = end;
-			}
-
-			end += 1;
-		}
+		let (program, arguments) = parse_command(command);
 
 		let thread = thread::spawn(move || {
-			let command_to_execute = command_to_execute.take().unwrap();
-			let mut command = Command::new(command_to_execute)
-				.args(&command_arguments)
+			let mut command = Command::new(program)
+				.args(&arguments)
 				.stdout(Stdio::piped())
 				.stdin(Stdio::piped())
 				.stderr(Stdio::piped())
@@ -88,4 +66,31 @@ impl<'a> Task<'a> {
 
 		return thread;
 	}
+}
+
+fn parse_command(command: &[u8]) -> (String, Vec<String>) {
+	let mut program = None;
+	let mut arguments = Vec::new();
+	let mut start = 0;
+	let mut end = 0;
+	let command_length = command.len();
+
+	while end <= command_length {
+		if end == command_length && command[end] == ' ' as u8 {
+			let fragment = &command[start..end];
+			let fragment = String::from_utf8_lossy(&fragment[..]).into_owned();
+
+			match program {
+				Some(_) => arguments.push(fragment),
+				None => program = Some(fragment)
+			}
+
+			end += 1;
+			start = end;
+		}
+
+		end += 1;
+	}
+
+	(program.unwrap(), arguments)
 }
