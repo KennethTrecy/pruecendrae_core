@@ -45,4 +45,14 @@ mod t {
 
 		assert_eq!(response, expected_reponse);
 	}
+
+	#[test]
+	pub fn can_request_success_kill() {
+		let task = Task::new(b"test", b"request success_kill");
+		let expected_reponse = Response::Killed;
+
+		let response = task.request(Request::Kill);
+
+		assert_eq!(response, expected_reponse);
+	}
 }

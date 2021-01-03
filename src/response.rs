@@ -2,5 +2,6 @@
 pub enum Response {
 	Output(Vec<u8>),
 	SuccessStop,
-	FailedStop
+	FailedStop,
+	Killed
 }

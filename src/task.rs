@@ -48,6 +48,7 @@ impl<'a> Task<'a> {
 			let mut process = run_command(program, arguments);
 
 			for request in receiver.iter() {
+				let mut may_continue = true;
 				let response;
 				match request {
 					Request::Output(max_output_size) => {
@@ -61,10 +62,17 @@ impl<'a> Task<'a> {
 							Ok(()) => response = Response::SuccessStop,
 							Err(_) => response = Response::FailedStop
 						}
+					},
+					Request::Kill => {
+						process.stop().unwrap();
+						may_continue = false;
+						response = Response::Killed;
 					}
 				}
 
 				sender.send(response).unwrap();
+
+				if !may_continue { break; }
 			}
 		});
 

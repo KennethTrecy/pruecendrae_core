@@ -1,4 +1,5 @@
 pub enum Request {
 	Output(usize),
-	Stop
+	Stop,
+	Kill
 }
