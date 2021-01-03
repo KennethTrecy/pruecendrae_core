@@ -49,8 +49,9 @@ impl<'a> Task<'a> {
 				match request {
 					Request::Output => {
 						let mut output = [0; 80];
-						command.read(&mut output).unwrap();
-						response = Response::Output(output.to_vec());
+						let size = command.read(&mut output).unwrap();
+						let output = (&output[0..size]).to_vec();
+						response = Response::Output(output);
 					}
 				}
 
