@@ -7,8 +7,10 @@ mod child;
 mod process;
 mod request;
 mod run_command;
-mod fake_process;
 mod parse_command;
+
+#[cfg(test)]
+mod fake_process;
 
 /// Represents a task that can be stored and managed.
 pub struct Task<'a> {
@@ -55,7 +57,10 @@ impl<'a> Task<'a> {
 						response = Response::Output(output);
 					},
 					Request::Terminate => {
-						unimplemented!()
+						match command.terminate() {
+							Ok(()) => response = Response::SuccessTermination,
+							Err(_) => response = Response::ErrorTermination
+						}
 					}
 				}
 
