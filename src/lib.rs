@@ -2,16 +2,18 @@ use std::thread::{self, JoinHandle};
 use std::process::{Command, Stdio};
 use std::sync::mpsc::{self, Sender, Receiver};
 
-mod task_message;
+mod request;
+mod response;
 
-pub use task_message::TaskMessage;
+pub use response::Response;
+pub use request::Request;
 
 pub struct Task<'a> {
 	name: &'a [u8],
 	command: &'a [u8],
 	thread: JoinHandle<()>,
-	sender: Sender<TaskMessage>,
-	receiver: Receiver<TaskMessage>
+	sender: Sender<Request>,
+	receiver: Receiver<Response>
 }
 
 impl<'a> Task<'a> {
@@ -28,11 +30,8 @@ impl<'a> Task<'a> {
 		}
 	}
 
-	fn run_command(
-		command: &'a [u8],
-		sender: Sender<TaskMessage>,
-		receiver: Receiver<TaskMessage>
-	) -> JoinHandle<()> {
+	fn run_command( command: &'a [u8], sender: Sender<Response>, receiver: Receiver<Request>)
+	-> JoinHandle<()> {
 		let (program, arguments) = parse_command(command);
 
 		let thread = thread::spawn(move || {
@@ -47,7 +46,7 @@ impl<'a> Task<'a> {
 			for request in receiver.iter() {
 				let response;
 				match request {
-					TaskMessage::RequestOutput => {
+					Request::Output => {
 						let mut output = [0; 80];
 						if let Some(mut child) = command.stdout {
 							use std::io::Read;
@@ -55,9 +54,8 @@ impl<'a> Task<'a> {
 							command.stdout = Some(child);
 						}
 
-						response = TaskMessage::ResponseOutput(output.to_vec());
-					},
-					_ => response = TaskMessage::ResponseOutput(Vec::new())
+						response = Response::Output(output.to_vec());
+					}
 				}
 
 				sender.send(response).unwrap();
