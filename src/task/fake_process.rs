@@ -70,7 +70,7 @@ mod t {
 	}
 
 	#[test]
-	fn can_be_terminated_with_success() {
+	fn can_be_stopped_with_success() {
 		let mut process = FakeProcess::new(String::from("request"), vec![
 			String::from("success_stop")
 		]);
@@ -81,7 +81,7 @@ mod t {
 	}
 
 	#[test]
-	fn can_be_terminated_with_error() {
+	fn can_be_stopped_with_error() {
 		let mut process = FakeProcess::new(String::from("request"), vec![
 			String::from("error_stop")
 		]);
