@@ -11,7 +11,7 @@ pub fn create_thread(program: String, arguments: Vec<String>)
 	let (insender, exreceiver) = mpsc::channel();
 
 	let thread = thread::spawn(move || {
-		let mut process = run(program, arguments);
+		let mut process = run(program.clone(), arguments.clone());
 
 		for request in inreceiver.iter() {
 			let mut may_continue = true;
@@ -28,6 +28,14 @@ pub fn create_thread(program: String, arguments: Vec<String>)
 						Response::Running
 					} else {
 						Response::SuccessStop
+					}
+				},
+				Request::Start => {
+					response = if process.check() {
+						Response::FailedStart
+					} else {
+						process = run(program.clone(), arguments.clone());
+						Response::SuccessStart
 					}
 				},
 				Request::Stop => {
