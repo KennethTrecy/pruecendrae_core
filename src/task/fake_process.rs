@@ -39,6 +39,19 @@ impl Process for FakeProcess {
 			unimplemented!()
 		}
 	}
+
+	fn check(&mut self) -> bool {
+		if self.program == "request" {
+			let first_argument = self.arguments.pop().unwrap();
+			if first_argument == "currently_running" || first_argument == "currently_stopped" {
+				first_argument == "currently_running"
+			} else {
+				unimplemented!()
+			}
+		} else {
+			unimplemented!()
+		}
+	}
 }
 
 #[cfg(test)]
@@ -76,5 +89,27 @@ mod t {
 		let result = process.stop();
 
 		assert_eq!(result.unwrap_err().kind(), ErrorKind::InvalidInput);
+	}
+
+	#[test]
+	fn can_be_checked_when_running() {
+		let mut process = FakeProcess::new(String::from("request"), vec![
+			String::from("currently_running")
+		]);
+
+		let is_running = process.check();
+
+		assert_eq!(is_running, true);
+	}
+
+	#[test]
+	fn can_be_checked_when_stopped() {
+		let mut process = FakeProcess::new(String::from("request"), vec![
+			String::from("currently_stopped")
+		]);
+
+		let is_running = process.check();
+
+		assert_eq!(is_running, false);
 	}
 }

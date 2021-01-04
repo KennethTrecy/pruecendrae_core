@@ -13,4 +13,11 @@ impl Process for Child {
 	fn stop(&mut self) -> Result<()> {
 		self.kill()
 	}
+
+	fn check(&mut self) -> bool {
+		match self.try_wait() {
+			Ok(Some(_)) | Err(_) => false,
+			Ok(None) => true
+		}
+	}
 }

@@ -7,4 +7,7 @@ pub trait Process {
 
 	/// Stops the process.
 	fn stop(&mut self) -> Result<()>;
+
+	/// Checks if the process is still running.
+	fn check(&mut self) -> bool;
 }
