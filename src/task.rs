@@ -6,8 +6,9 @@ use crate::response::Response;
 mod child;
 mod process;
 mod request;
-mod run_command;
-mod parse_command;
+
+/// Contains functions related to commands
+mod command;
 
 #[cfg(test)]
 mod fake_process;
@@ -21,8 +22,7 @@ pub struct Task<'a> {
 	receiver: Receiver<Response>
 }
 
-use run_command::run_command;
-use parse_command::parse_command;
+use crate::task::command::{run, parse};
 use process::Process;
 
 impl<'a> Task<'a> {
@@ -42,10 +42,10 @@ impl<'a> Task<'a> {
 
 	fn run_command(command: &'a [u8], sender: Sender<Response>, receiver: Receiver<Request>)
 	-> JoinHandle<()> {
-		let (program, arguments) = parse_command(command);
+		let (program, arguments) = parse(command);
 
 		let thread = thread::spawn(move || {
-			let mut process = run_command(program, arguments);
+			let mut process = run(program, arguments);
 
 			for request in receiver.iter() {
 				let mut may_continue = true;

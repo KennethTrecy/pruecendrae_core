@@ -1,4 +1,4 @@
-pub fn parse_command(command: &[u8]) -> (String, Vec<String>) {
+pub fn parse(command: &[u8]) -> (String, Vec<String>) {
 	let mut program = None;
 	let mut arguments = Vec::new();
 	let mut start = 0;
@@ -27,7 +27,7 @@ pub fn parse_command(command: &[u8]) -> (String, Vec<String>) {
 
 #[cfg(test)]
 mod t {
-	use super::parse_command;
+	use super::parse;
 
 	#[test]
 	fn can_parse_command() {
@@ -39,7 +39,7 @@ mod t {
 			String::from("argument_3")
 		];
 
-		let command = parse_command(&sample[..]);
+		let command = parse(&sample[..]);
 
 		assert_eq!(command, (expected_program, expected_arguments));
 	}
