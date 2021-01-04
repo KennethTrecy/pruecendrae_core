@@ -1,16 +1,22 @@
-use std::thread::JoinHandle;
-use std::sync::mpsc::{Sender, Receiver};
-use crate::request::Request;
-use crate::response::Response;
-
 mod child;
 mod process;
 
 /// Contains functions related to commands
 mod command;
 
+/// Contains variants of `Request` messages.
+pub mod request;
+
+/// Contains variants of `Response` messages.
+pub mod response;
+
 #[cfg(test)]
 mod fake_process;
+
+use std::thread::JoinHandle;
+use std::sync::mpsc::{Sender, Receiver};
+use request::Request;
+use response::Response;
 
 /// Represents a task that can be stored and managed.
 pub struct Task<'a> {

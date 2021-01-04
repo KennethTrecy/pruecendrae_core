@@ -1,6 +1,6 @@
 use std::sync::mpsc::SendError;
-use crate::request::Request;
-use crate::response::Response;
+use crate::task::request::Request;
+use crate::task::response::Response;
 use super::Task;
 
 impl<'a> Task<'a> {
