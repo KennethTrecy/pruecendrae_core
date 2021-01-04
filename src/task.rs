@@ -1,5 +1,5 @@
-use std::thread::{self, JoinHandle};
-use std::sync::mpsc::{self, Sender, Receiver};
+use std::thread::JoinHandle;
+use std::sync::mpsc::{Sender, Receiver};
 use crate::request::Request;
 use crate::response::Response;
 
@@ -23,60 +23,24 @@ pub struct Task<'a> {
 
 mod messengers;
 
-use crate::task::command::{run, parse};
-use process::Process;
+use crate::task::command::{create_thread, parse};
 
 impl<'a> Task<'a> {
 	/// Creates a Task and runs the command.
 	pub fn new(name: &'a [u8], command: &'a [u8]) -> Self {
-		let (exsender, inreceiver) = mpsc::channel();
-		let (insender, exreceiver) = mpsc::channel();
-		let thread = Self::run_command(command, insender, inreceiver);
+		let (thread, sender, receiver) = Self::run_command(command);
 		Self {
 			name,
 			command,
 			thread,
-			sender: exsender,
-			receiver: exreceiver
+			sender,
+			receiver
 		}
 	}
 
-	fn run_command(command: &'a [u8], sender: Sender<Response>, receiver: Receiver<Request>)
-	-> JoinHandle<()> {
+	fn run_command(command: &'a [u8]) -> (JoinHandle<()>, Sender<Request>, Receiver<Response>) {
 		let (program, arguments) = parse(command);
-
-		let thread = thread::spawn(move || {
-			let mut process = run(program, arguments);
-
-			for request in receiver.iter() {
-				let mut may_continue = true;
-				let response;
-				match request {
-					Request::Output(max_output_size) => {
-						let mut output = vec![0; max_output_size];
-						let read_size = process.read(&mut output).unwrap();
-						let output = (&output[0..read_size]).to_vec();
-						response = Response::Output(output);
-					},
-					Request::Stop => {
-						match process.stop() {
-							Ok(()) => response = Response::SuccessStop,
-							Err(_) => response = Response::FailedStop
-						}
-					},
-					Request::Kill => {
-						process.stop().unwrap();
-						may_continue = false;
-						response = Response::Killed;
-					}
-				}
-
-				sender.send(response).unwrap();
-
-				if !may_continue { break; }
-			}
-		});
-
-		return thread;
+		let thread = create_thread(program, arguments);
+		thread
 	}
 }
