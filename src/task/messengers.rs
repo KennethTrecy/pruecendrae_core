@@ -25,7 +25,7 @@ mod t {
 		let expected_response_content = SAMPLE.into_iter().cycle().take(max_output_size).collect();
 		let expected_reponse = Response::Output(expected_response_content);
 
-		task.send_request(Request::Output(max_output_size));
+		task.send_request(Request::Output(max_output_size)).unwrap();
 		let response = task.receive_response();
 
 		assert_eq!(response, expected_reponse);
@@ -36,7 +36,7 @@ mod t {
 		let task = Task::new(b"test", b"request success_stop");
 		let expected_reponse = Response::SuccessStop;
 
-		task.send_request(Request::Stop);
+		task.send_request(Request::Stop).unwrap();
 		let response = task.receive_response();
 
 		assert_eq!(response, expected_reponse);
@@ -47,7 +47,7 @@ mod t {
 		let task = Task::new(b"test", b"request error_stop");
 		let expected_reponse = Response::FailedStop;
 
-		task.send_request(Request::Stop);
+		task.send_request(Request::Stop).unwrap();
 		let response = task.receive_response();
 
 		assert_eq!(response, expected_reponse);
@@ -58,7 +58,7 @@ mod t {
 		let task = Task::new(b"test", b"request success_kill");
 		let expected_reponse = Response::Killed;
 
-		task.send_request(Request::Kill);
+		task.send_request(Request::Kill).unwrap();
 		let response = task.receive_response();
 
 		assert_eq!(response, expected_reponse);
