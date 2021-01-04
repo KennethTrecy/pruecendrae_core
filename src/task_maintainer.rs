@@ -1,14 +1,15 @@
 use std::collections::HashMap;
 use crate::task::Task;
 
+mod request;
+mod response;
+
 /// Maintains a collection of tasks.
 pub struct TaskMaintainer<'a> {
 	tasks: HashMap<&'a [u8], Task<'a>>
 }
 
-mod create;
-mod request;
-mod response;
+mod implementation;
 
 pub use request::Request;
 pub use response::Response;
