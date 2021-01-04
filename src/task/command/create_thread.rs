@@ -23,6 +23,13 @@ pub fn create_thread(program: String, arguments: Vec<String>)
 					let output = (&output[0..read_size]).to_vec();
 					response = Response::Output(output);
 				},
+				Request::Check => {
+					response = if process.check() {
+						Response::Running
+					} else {
+						Response::SuccessStop
+					}
+				},
 				Request::Stop => {
 					match process.stop() {
 						Ok(()) => response = Response::SuccessStop,
