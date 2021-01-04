@@ -5,7 +5,6 @@ use crate::response::Response;
 
 mod child;
 mod process;
-mod request;
 
 /// Contains functions related to commands
 mod command;
@@ -21,6 +20,8 @@ pub struct Task<'a> {
 	sender: Sender<Request>,
 	receiver: Receiver<Response>
 }
+
+mod messengers;
 
 use crate::task::command::{run, parse};
 use process::Process;

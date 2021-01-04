@@ -1,10 +1,14 @@
+use std::sync::mpsc::SendError;
 use crate::request::Request;
 use crate::response::Response;
 use super::Task;
 
 impl<'a> Task<'a> {
-	pub fn request(&self, request: Request) -> Response {
-		self.sender.send(request).unwrap();
+	pub fn send_request(&self, request: Request) -> Result<(), SendError<Request>> {
+		self.sender.send(request)
+	}
+
+	pub fn receive_response(&self) -> Response {
 		self.receiver.recv().unwrap()
 	}
 }
@@ -21,7 +25,8 @@ mod t {
 		let expected_response_content = SAMPLE.into_iter().cycle().take(max_output_size).collect();
 		let expected_reponse = Response::Output(expected_response_content);
 
-		let response = task.request(Request::Output(max_output_size));
+		task.send_request(Request::Output(max_output_size));
+		let response = task.receive_response();
 
 		assert_eq!(response, expected_reponse);
 	}
@@ -31,7 +36,8 @@ mod t {
 		let task = Task::new(b"test", b"request success_stop");
 		let expected_reponse = Response::SuccessStop;
 
-		let response = task.request(Request::Stop);
+		task.send_request(Request::Stop);
+		let response = task.receive_response();
 
 		assert_eq!(response, expected_reponse);
 	}
@@ -41,7 +47,8 @@ mod t {
 		let task = Task::new(b"test", b"request error_stop");
 		let expected_reponse = Response::FailedStop;
 
-		let response = task.request(Request::Stop);
+		task.send_request(Request::Stop);
+		let response = task.receive_response();
 
 		assert_eq!(response, expected_reponse);
 	}
@@ -51,7 +58,8 @@ mod t {
 		let task = Task::new(b"test", b"request success_kill");
 		let expected_reponse = Response::Killed;
 
-		let response = task.request(Request::Kill);
+		task.send_request(Request::Kill);
+		let response = task.receive_response();
 
 		assert_eq!(response, expected_reponse);
 	}
