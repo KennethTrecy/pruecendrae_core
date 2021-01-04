@@ -5,4 +5,4 @@ mod task;
 mod task_maintainer;
 
 pub use task::Task;
-pub use task_maintainer::TaskMaintainer;
+pub use task_maintainer::{TaskMaintainer, Request, Response};
