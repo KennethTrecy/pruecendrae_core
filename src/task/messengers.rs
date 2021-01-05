@@ -15,15 +15,15 @@ impl<'a> Task<'a> {
 
 #[cfg(test)]
 mod t {
-	use crate::task::fake_process::SAMPLE;
+	use crate::process::fake_process::FAKE_SAMPLE;
 	use super::{Request, Response, Task};
 
 	#[test]
 	pub fn can_request_output() {
 		let task = Task::new(b"test", b"request output");
 		let max_output_size = 10;
-		let expected_response_content = SAMPLE.into_iter().cycle().take(max_output_size).collect();
-		let expected_reponse = Response::Output(Ok(expected_response_content));
+		let expected_content = FAKE_SAMPLE.into_iter().cycle().take(max_output_size).collect();
+		let expected_reponse = Response::Output(Ok(expected_content));
 
 		task.send_request(Request::Output(max_output_size)).unwrap();
 		let response = task.receive_response();

@@ -11,3 +11,10 @@ pub trait Process {
 	/// Checks if the process is still running.
 	fn check(&mut self) -> bool;
 }
+
+/// Contains the implementation of `Process` for `std::process::Child`.
+mod child;
+
+/// Contains the `FakeProcess` that is usually used as stub.
+#[cfg(test)]
+pub mod fake_process;

@@ -1,5 +1,3 @@
-mod child;
-mod process;
 mod result;
 
 /// Contains functions related to commands
@@ -10,9 +8,6 @@ pub mod request;
 
 /// Contains variants of `Response` messages.
 pub mod response;
-
-#[cfg(test)]
-mod fake_process;
 
 use std::thread::JoinHandle;
 use std::sync::mpsc::{Sender, Receiver};

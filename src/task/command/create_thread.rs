@@ -1,7 +1,7 @@
 use std::thread::{self, JoinHandle};
 use std::sync::mpsc::{self, Sender, Receiver};
+use crate::process::Process;
 use crate::task::command::run;
-use crate::task::process::Process;
 use crate::task::request::Request;
 use crate::task::response::Response;
 

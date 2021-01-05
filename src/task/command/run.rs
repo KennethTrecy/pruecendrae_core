@@ -3,10 +3,10 @@
 #![allow(unused_imports, unused_variables)]
 
 use std::process::{Child, Command, Stdio};
-use crate::task::process::Process;
+use crate::process::Process;
 
 #[cfg(test)]
-use crate::task::fake_process::FakeProcess;
+use crate::process::fake_process::FakeProcess;
 
 pub fn run(program: String, arguments: Vec<String>) -> impl Process {
 	#[cfg(not(test))]
