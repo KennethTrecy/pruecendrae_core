@@ -18,11 +18,24 @@ use super::Process;
 
 impl Process for FakeProcess {
 	fn read(&mut self, buffer: &mut [u8]) -> Result<usize> {
-		for (buffer, sample) in buffer.iter_mut().zip(FAKE_SAMPLE.into_iter().cycle()) {
-			*buffer = sample;
-		}
+		if self.program == "request" {
+		let first_argument = self.arguments.pop().unwrap();
+			if first_argument == "output_success" {
+				for (buffer, sample) in buffer.iter_mut().zip(FAKE_SAMPLE.into_iter().cycle()) {
+					*buffer = sample;
+				}
 
-		Ok(buffer.len())
+				Ok(buffer.len())
+			} else if first_argument == "output_failure" {
+				Err(Error::new(
+					ErrorKind::BrokenPipe,
+					"There is a problem in reading the output of the program."))
+			} else {
+				unimplemented!()
+			}
+		} else {
+			unimplemented!()
+		}
 	}
 
 	fn stop(&mut self) -> Result<()> {
@@ -59,14 +72,29 @@ mod t {
 	use super::{ErrorKind, FakeProcess, Process, FAKE_SAMPLE};
 
 	#[test]
-	fn can_read() {
-		let mut process = FakeProcess::new(String::new(), vec![String::new()]);
+	fn can_output_with_success() {
+		let mut process = FakeProcess::new(String::from("request"), vec![
+			String::from("output_success")
+		]);
 		let mut buffer = [0; 20];
 
 		let result = process.read(&mut buffer);
 
 		assert_eq!(buffer.to_vec(), FAKE_SAMPLE.take(20).collect::<Vec<u8>>());
 		assert_eq!(result.unwrap(), 20);
+	}
+
+	#[test]
+	fn cannot_output_with_failure() {
+		let mut process = FakeProcess::new(String::from("request"), vec![
+			String::from("output_failure")
+		]);
+		let mut buffer = [0; 30];
+
+		let result = process.read(&mut buffer);
+
+		assert_eq!(buffer.to_vec(), [0; 30]);
+		assert_eq!(result.unwrap_err().kind(), ErrorKind::BrokenPipe);
 	}
 
 	#[test]

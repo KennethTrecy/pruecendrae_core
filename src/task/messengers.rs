@@ -19,11 +19,23 @@ mod t {
 	use super::{Request, Response, Task};
 
 	#[test]
-	pub fn can_request_output() {
-		let task = Task::new(b"test", b"request output");
+	pub fn can_request_output_success() {
+		let task = Task::new(b"test", b"request output_success");
 		let max_output_size = 10;
-		let expected_content = FAKE_SAMPLE.into_iter().cycle().take(max_output_size).collect();
+		let expected_content = FAKE_SAMPLE.take(max_output_size).collect();
 		let expected_reponse = Response::Output(Ok(expected_content));
+
+		task.send_request(Request::Output(max_output_size)).unwrap();
+		let response = task.receive_response();
+
+		assert_eq!(response, expected_reponse);
+	}
+
+	#[test]
+	pub fn can_request_output_error() {
+		let task = Task::new(b"test", b"request output_failure");
+		let max_output_size = 15;
+		let expected_reponse = Response::Output(Err(()));
 
 		task.send_request(Request::Output(max_output_size)).unwrap();
 		let response = task.receive_response();

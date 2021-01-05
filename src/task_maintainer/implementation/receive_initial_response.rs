@@ -47,9 +47,9 @@ mod t {
 		let task_names = vec![&b"request a"[..], &b"request b"[..], &b"request c"[..]];
 		let max_output_size = 20;
 		let mut maintainer = TaskMaintainer::new();
-		maintainer.create(task_names[0], b"program_a").unwrap();
-		maintainer.create(task_names[1], b"program_b").unwrap();
-		maintainer.create(task_names[2], b"program_c").unwrap();
+		maintainer.create(task_names[0], b"request output_success").unwrap();
+		maintainer.create(task_names[1], b"request output_success").unwrap();
+		maintainer.create(task_names[2], b"request output_success").unwrap();
 
 		maintainer.send_request(Request::Output(max_output_size, task_names.clone()));
 		let initial_response = maintainer.receive_initial_response(&task_names);

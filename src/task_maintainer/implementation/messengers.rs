@@ -70,7 +70,6 @@ mod t {
 		(maintainer, task_names)
 	}
 
-	#[ignore]
 	#[test]
 	fn can_receive_output_response() {
 		let (maintainer, task_names) = create_maintainer(
@@ -82,7 +81,7 @@ mod t {
 		let response = maintainer.receive_response(task_names.clone());
 
 		assert_eq!(response, Response::Output(
-			vec![(task_names[0], FAKE_SAMPLE.take(max_output_size).collect())],
+			vec![(task_names[0], FAKE_SAMPLE.into_iter().cycle().take(max_output_size).collect())],
 			vec![task_names[1]]
 		));
 	}
