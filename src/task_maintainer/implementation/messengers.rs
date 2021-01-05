@@ -1,5 +1,5 @@
-use crate::{Request as MaintainerRequest};
-use crate::task::Request as TaskRequest;
+use crate::{Request as MaintainerRequest, Response as MaintainerResponse};
+use crate::task::{Request as TaskRequest, Response as TaskResponse};
 use super::TaskMaintainer;
 
 impl<'a> TaskMaintainer<'a> {
@@ -20,10 +20,34 @@ impl<'a> TaskMaintainer<'a> {
 		}
 
 		match request_type {
-			MaintainerRequest::Output(max_output_size, names) => request!(
+			MaintainerRequest::Output(max_output_size, names) => request!{
 				for each names, Output with max_output_size
-			),
+			},
 			_ => { todo!() }
+		}
+	}
+
+	pub fn receive_response(&self, names: Vec<&'a [u8]>) -> MaintainerResponse<'a> {
+		let mut name_iterator = names.iter();
+		loop {
+			let name = name_iterator.next();
+			if let Some(_) = name {
+				let name = name.unwrap();
+				if self.tasks.contains_key(name) {
+					let task = self.tasks.get(name).unwrap();
+					let response;
+					match task.receive_response() {
+						TaskResponse::Output(content) => {
+							response = MaintainerResponse::Output(Vec::new(), Vec::new());
+						},
+						_ => todo!()
+					}
+
+					break response;
+				} else {
+					todo!()
+				}
+			}
 		}
 	}
 }
