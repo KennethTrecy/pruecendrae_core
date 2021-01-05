@@ -58,31 +58,32 @@ impl<'a> TaskMaintainer<'a> {
 
 #[cfg(test)]
 mod t {
-	use crate::process::fake_process::FAKE_SAMPLE;
+	use crate::process::fake_process::{FAKE_OUTPUT_CONTENT, request};
 	use super::{MaintainerRequest as Request, MaintainerResponse as Response, TaskMaintainer};
 
-	fn create_maintainer<'a>(fake_success: &'a [u8], fake_failure: &'a [u8])
+	fn create_maintainer<'a>(fake_success: &'a str, fake_failure: &'a str)
 	-> (TaskMaintainer<'a>, Vec<&'a [u8]>) {
 		let task_names = vec![&b"success"[..], &b"failure"[..]];
 		let mut maintainer = TaskMaintainer::new();
-		maintainer.create(task_names[0], fake_success).unwrap();
-		maintainer.create(task_names[1], fake_failure).unwrap();
+		maintainer.create(task_names[0], fake_success.as_bytes()).unwrap();
+		maintainer.create(task_names[1], fake_failure.as_bytes()).unwrap();
 		(maintainer, task_names)
 	}
 
 	#[test]
 	fn can_receive_output_response() {
 		let (maintainer, task_names) = create_maintainer(
-			b"request output_success",
-			b"request output_failure");
+			request::OUTPUT_SUCCESS,
+			request::OUTPUT_FAILURE);
 		let max_output_size = 30;
 
 		maintainer.send_request(Request::Output(max_output_size, task_names.clone()));
 		let response = maintainer.receive_response(task_names.clone());
 
 		assert_eq!(response, Response::Output(
-			vec![(task_names[0], FAKE_SAMPLE.into_iter().cycle().take(max_output_size).collect())],
-			vec![task_names[1]]
-		));
+			vec![
+				(task_names[0], FAKE_OUTPUT_CONTENT.into_iter().cycle().take(max_output_size).collect())
+			],
+			vec![task_names[1]]));
 	}
 }

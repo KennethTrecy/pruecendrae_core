@@ -15,14 +15,16 @@ impl<'a> Task<'a> {
 
 #[cfg(test)]
 mod t {
-	use crate::process::fake_process::FAKE_SAMPLE;
+	use crate::process::fake_process::{FAKE_OUTPUT_CONTENT, request};
 	use super::{Request, Response, Task};
+
+	fn create_task(command: &str) -> Task { Task::new(b"test", command.as_bytes()) }
 
 	#[test]
 	pub fn can_request_output_success() {
-		let task = Task::new(b"test", b"request output_success");
+		let task = create_task(request::OUTPUT_SUCCESS);
 		let max_output_size = 10;
-		let expected_content = FAKE_SAMPLE.take(max_output_size).collect();
+		let expected_content = FAKE_OUTPUT_CONTENT.take(max_output_size).collect();
 		let expected_reponse = Response::Output(Ok(expected_content));
 
 		task.send_request(Request::Output(max_output_size)).unwrap();
@@ -33,7 +35,7 @@ mod t {
 
 	#[test]
 	pub fn can_request_output_error() {
-		let task = Task::new(b"test", b"request output_failure");
+		let task = create_task(request::OUTPUT_FAILURE);
 		let max_output_size = 15;
 		let expected_reponse = Response::Output(Err(()));
 
@@ -45,7 +47,7 @@ mod t {
 
 	#[test]
 	pub fn can_request_success_stop() {
-		let task = Task::new(b"test", b"request success_stop");
+		let task = create_task(request::STOP_SUCCESS);
 		let expected_reponse = Response::Stop(Ok(()));
 
 		task.send_request(Request::Stop).unwrap();
@@ -56,7 +58,7 @@ mod t {
 
 	#[test]
 	pub fn can_request_error_stop() {
-		let task = Task::new(b"test", b"request error_stop");
+		let task = create_task(request::STOP_FAILURE);
 		let expected_reponse = Response::Stop(Err(()));
 
 		task.send_request(Request::Stop).unwrap();
@@ -67,7 +69,7 @@ mod t {
 
 	#[test]
 	pub fn can_request_success_kill() {
-		let task = Task::new(b"test", b"request success_kill");
+		let task = create_task(request::KILL_SUCCESS);
 		let expected_reponse = Response::Killed(Ok(()));
 
 		task.send_request(Request::Kill).unwrap();

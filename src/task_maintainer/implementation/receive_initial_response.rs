@@ -38,7 +38,7 @@ impl<'a> TaskMaintainer<'a> {
 
 #[cfg(test)]
 mod t {
-	use crate::process::fake_process::FAKE_SAMPLE;
+	use crate::process::fake_process::{FAKE_OUTPUT_CONTENT, request};
 
 	use super::{MaintainerRequest as Request, MaintainerResponse as Response, TaskMaintainer};
 
@@ -47,15 +47,15 @@ mod t {
 		let task_names = vec![&b"request a"[..], &b"request b"[..], &b"request c"[..]];
 		let max_output_size = 20;
 		let mut maintainer = TaskMaintainer::new();
-		maintainer.create(task_names[0], b"request output_success").unwrap();
-		maintainer.create(task_names[1], b"request output_success").unwrap();
-		maintainer.create(task_names[2], b"request output_success").unwrap();
+		maintainer.create(task_names[0], request::OUTPUT_SUCCESS.as_bytes()).unwrap();
+		maintainer.create(task_names[1], request::OUTPUT_SUCCESS.as_bytes()).unwrap();
+		maintainer.create(task_names[2], request::OUTPUT_SUCCESS.as_bytes()).unwrap();
 
 		maintainer.send_request(Request::Output(max_output_size, task_names.clone()));
 		let initial_response = maintainer.receive_initial_response(&task_names);
 
 		assert_eq!(initial_response, Response::Output(vec![
-			(task_names[0], FAKE_SAMPLE.take(max_output_size).collect())
+			(task_names[0], FAKE_OUTPUT_CONTENT.take(max_output_size).collect())
 		], Vec::new()))
 	}
 }

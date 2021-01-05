@@ -1,5 +1,16 @@
 use std::ops::Range;
-pub const FAKE_SAMPLE: Range<u8> = ('a' as u8)..('z' as u8);
+pub const FAKE_OUTPUT_CONTENT: Range<u8> = ('a' as u8)..('z' as u8);
+
+pub mod request {
+	pub const PROGRAM: &'static str = "request";
+	pub const STOP_SUCCESS: &'static str = "request stop_success";
+	pub const STOP_FAILURE: &'static str = "request stop_failure";
+	pub const CHECK_SUCCESS: &'static str = "request check_success";
+	pub const CHECK_FAILURE: &'static str = "request check_failure";
+	pub const OUTPUT_SUCCESS: &'static str = "request output_success";
+	pub const OUTPUT_FAILURE: &'static str = "request output_failure";
+	pub const KILL_SUCCESS: &'static str = "request kill";
+}
 
 /// Represents the fake process
 pub struct FakeProcess {
@@ -18,15 +29,15 @@ use super::Process;
 
 impl Process for FakeProcess {
 	fn read(&mut self, buffer: &mut [u8]) -> Result<usize> {
-		if self.program == "request" {
+		if self.program == request::PROGRAM {
 		let first_argument = self.arguments.pop().unwrap();
-			if first_argument == "output_success" {
-				for (buffer, sample) in buffer.iter_mut().zip(FAKE_SAMPLE.into_iter().cycle()) {
+			if request::OUTPUT_SUCCESS.ends_with(&first_argument) {
+				for (buffer, sample) in buffer.iter_mut().zip(FAKE_OUTPUT_CONTENT.into_iter().cycle()) {
 					*buffer = sample;
 				}
 
 				Ok(buffer.len())
-			} else if first_argument == "output_failure" {
+			} else if request::OUTPUT_FAILURE.ends_with(&first_argument) {
 				Err(Error::new(
 					ErrorKind::BrokenPipe,
 					"There is a problem in reading the output of the program."))
@@ -39,11 +50,12 @@ impl Process for FakeProcess {
 	}
 
 	fn stop(&mut self) -> Result<()> {
-		if self.program == "request" {
+		if self.program == request::PROGRAM {
 			let first_argument = self.arguments.pop().unwrap();
-			if first_argument == "success_stop" || first_argument == "success_kill" {
+			if request::STOP_SUCCESS.ends_with(&first_argument)
+			|| request::KILL_SUCCESS.ends_with(&first_argument) {
 				Ok(())
-			} else if first_argument == "error_stop" {
+			} else if request::STOP_FAILURE.ends_with(&first_argument) {
 				Err(Error::new(ErrorKind::InvalidInput, "Program was already stopped."))
 			} else {
 				unimplemented!()
@@ -54,10 +66,11 @@ impl Process for FakeProcess {
 	}
 
 	fn check(&mut self) -> bool {
-		if self.program == "request" {
+		if self.program == request::PROGRAM {
 			let first_argument = self.arguments.pop().unwrap();
-			if first_argument == "currently_running" || first_argument == "currently_stopped" {
-				first_argument == "currently_running"
+			if request::CHECK_SUCCESS.ends_with(&first_argument)
+			|| request::CHECK_FAILURE.ends_with(&first_argument) {
+				request::CHECK_SUCCESS.ends_with(&first_argument)
 			} else {
 				unimplemented!()
 			}
@@ -69,26 +82,28 @@ impl Process for FakeProcess {
 
 #[cfg(test)]
 mod t {
-	use super::{ErrorKind, FakeProcess, Process, FAKE_SAMPLE};
+	use super::{ErrorKind, FAKE_OUTPUT_CONTENT, FakeProcess, Process, request};
+
+	fn create_fake_process(command: &str) -> FakeProcess {
+		let program = request::PROGRAM;
+		let argument = &command[program.len() + 1..];
+		FakeProcess::new(String::from(program), vec![String::from(argument)])
+	}
 
 	#[test]
 	fn can_output_with_success() {
-		let mut process = FakeProcess::new(String::from("request"), vec![
-			String::from("output_success")
-		]);
+		let mut process = create_fake_process(request::OUTPUT_SUCCESS);
 		let mut buffer = [0; 20];
 
 		let result = process.read(&mut buffer);
 
-		assert_eq!(buffer.to_vec(), FAKE_SAMPLE.take(20).collect::<Vec<u8>>());
+		assert_eq!(buffer.to_vec(), FAKE_OUTPUT_CONTENT.take(20).collect::<Vec<u8>>());
 		assert_eq!(result.unwrap(), 20);
 	}
 
 	#[test]
 	fn cannot_output_with_failure() {
-		let mut process = FakeProcess::new(String::from("request"), vec![
-			String::from("output_failure")
-		]);
+		let mut process = create_fake_process(request::OUTPUT_FAILURE);
 		let mut buffer = [0; 30];
 
 		let result = process.read(&mut buffer);
@@ -99,9 +114,7 @@ mod t {
 
 	#[test]
 	fn can_be_stopped_with_success() {
-		let mut process = FakeProcess::new(String::from("request"), vec![
-			String::from("success_stop")
-		]);
+		let mut process = create_fake_process(request::STOP_SUCCESS);
 
 		let result = process.stop();
 
@@ -110,9 +123,7 @@ mod t {
 
 	#[test]
 	fn can_be_stopped_with_error() {
-		let mut process = FakeProcess::new(String::from("request"), vec![
-			String::from("error_stop")
-		]);
+		let mut process = create_fake_process(request::STOP_FAILURE);
 
 		let result = process.stop();
 
@@ -121,9 +132,7 @@ mod t {
 
 	#[test]
 	fn can_be_checked_when_running() {
-		let mut process = FakeProcess::new(String::from("request"), vec![
-			String::from("currently_running")
-		]);
+		let mut process = create_fake_process(request::CHECK_SUCCESS);
 
 		let is_running = process.check();
 
@@ -132,9 +141,7 @@ mod t {
 
 	#[test]
 	fn can_be_checked_when_stopped() {
-		let mut process = FakeProcess::new(String::from("request"), vec![
-			String::from("currently_stopped")
-		]);
+		let mut process = create_fake_process(request::CHECK_FAILURE);
 
 		let is_running = process.check();
 
