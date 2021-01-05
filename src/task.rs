@@ -1,5 +1,6 @@
 mod child;
 mod process;
+mod result;
 
 /// Contains functions related to commands
 mod command;

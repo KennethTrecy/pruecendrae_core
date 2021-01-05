@@ -21,33 +21,35 @@ pub fn create_thread(program: String, arguments: Vec<String>)
 					let mut output = vec![0; max_output_size];
 					let read_size = process.read(&mut output).unwrap();
 					let output = (&output[0..read_size]).to_vec();
-					response = Response::Output(output);
+					response = Response::Output(Ok(output));
 				},
 				Request::Check => {
-					response = if process.check() {
-						Response::Running
+					let result = if process.check() {
+						Ok(())
 					} else {
-						Response::SuccessStop
-					}
+						Err(())
+					};
+
+					response = Response::Check(result);
 				},
 				Request::Start => {
-					response = if process.check() {
-						Response::FailedStart
+					let result = if process.check() {
+						Ok(())
 					} else {
 						process = run(program.clone(), arguments.clone());
-						Response::SuccessStart
-					}
+						Err(())
+					};
+
+					response = Response::Start(result);
 				},
 				Request::Stop => {
-					match process.stop() {
-						Ok(()) => response = Response::SuccessStop,
-						Err(_) => response = Response::FailedStop
-					}
+					let result = process.stop().map_err(|_| ());
+					response = Response::Stop(result);
 				},
 				Request::Kill => {
-					process.stop().unwrap();
+					let result = process.stop().map_err(|_| ());
 					may_continue = false;
-					response = Response::Killed;
+					response = Response::Killed(result);
 				}
 			}
 

@@ -23,7 +23,7 @@ mod t {
 		let task = Task::new(b"test", b"request output");
 		let max_output_size = 10;
 		let expected_response_content = SAMPLE.into_iter().cycle().take(max_output_size).collect();
-		let expected_reponse = Response::Output(expected_response_content);
+		let expected_reponse = Response::Output(Ok(expected_response_content));
 
 		task.send_request(Request::Output(max_output_size)).unwrap();
 		let response = task.receive_response();
@@ -34,7 +34,7 @@ mod t {
 	#[test]
 	pub fn can_request_success_stop() {
 		let task = Task::new(b"test", b"request success_stop");
-		let expected_reponse = Response::SuccessStop;
+		let expected_reponse = Response::Stop(Ok(()));
 
 		task.send_request(Request::Stop).unwrap();
 		let response = task.receive_response();
@@ -45,7 +45,7 @@ mod t {
 	#[test]
 	pub fn can_request_error_stop() {
 		let task = Task::new(b"test", b"request error_stop");
-		let expected_reponse = Response::FailedStop;
+		let expected_reponse = Response::Stop(Err(()));
 
 		task.send_request(Request::Stop).unwrap();
 		let response = task.receive_response();
@@ -56,7 +56,7 @@ mod t {
 	#[test]
 	pub fn can_request_success_kill() {
 		let task = Task::new(b"test", b"request success_kill");
-		let expected_reponse = Response::Killed;
+		let expected_reponse = Response::Killed(Ok(()));
 
 		task.send_request(Request::Kill).unwrap();
 		let response = task.receive_response();
