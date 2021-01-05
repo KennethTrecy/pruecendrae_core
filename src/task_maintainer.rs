@@ -2,8 +2,7 @@ use std::collections::HashMap;
 use crate::task::Task;
 
 mod request;
-mod failed_response;
-mod success_response;
+mod response;
 
 /// Maintains a collection of tasks.
 pub struct TaskMaintainer<'a> {
@@ -13,8 +12,7 @@ pub struct TaskMaintainer<'a> {
 mod implementation;
 
 pub use request::Request;
-pub use failed_response::FailedResponse;
-pub use success_response::SuccessResponse;
+pub use response::Response;
 
 impl<'a> TaskMaintainer<'a> {
 	pub fn new() -> Self {
