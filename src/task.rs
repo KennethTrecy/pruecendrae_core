@@ -16,8 +16,8 @@ mod fake_process;
 
 use std::thread::JoinHandle;
 use std::sync::mpsc::{Sender, Receiver};
-use request::Request;
-use response::Response;
+pub use request::Request;
+pub use response::Response;
 
 /// Represents a task that can be stored and managed.
 pub struct Task<'a> {
