@@ -24,8 +24,9 @@ impl<'a> TaskMaintainer<'a> {
 				for each names, Output with max_output_size
 			},
 			MaintainerRequest::Check(names) => request!{for each names, Check},
+			MaintainerRequest::Start(_names) => { todo!() },
 			MaintainerRequest::Stop(names) => request!{for each names, Stop},
-			_ => { todo!() }
+			MaintainerRequest::Kill(_names) => { todo!() }
 		}
 	}
 
@@ -67,10 +68,15 @@ impl<'a> TaskMaintainer<'a> {
 			MaintainerResponse::Check(mut successes, mut failures) => receive_other!{
 				Check that will be classified as either one of the successes or failures
 			},
+			MaintainerResponse::Start(mut _successes, mut _failures) => {
+				todo!()
+			},
 			MaintainerResponse::Stop(mut successes, mut failures) => receive_other!{
 				Stop that will be classified as either one of the successes or failures
 			},
-			_ => todo!()
+			MaintainerResponse::Kill(mut _successes, mut _failures) => {
+				todo!()
+			}
 		}
 
 		response
