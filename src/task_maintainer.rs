@@ -1,6 +1,8 @@
 use std::collections::HashMap;
 use crate::task::Task;
 
+#[macro_use]
+mod macros;
 mod request;
 mod response;
 
