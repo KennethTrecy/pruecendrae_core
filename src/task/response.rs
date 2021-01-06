@@ -6,5 +6,5 @@ pub enum Response {
 	Start(Result<()>),
 	Check(Result<()>),
 	Stop(Result<()>),
-	Killed(Result<()>)
+	Kill(Result<()>)
 }

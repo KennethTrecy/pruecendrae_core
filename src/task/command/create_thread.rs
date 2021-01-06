@@ -55,7 +55,7 @@ pub fn create_thread(program: String, arguments: Vec<String>)
 				Request::Kill => {
 					let result = process.stop().map_err(|_| ());
 					may_continue = false;
-					response = Response::Killed(result);
+					response = Response::Kill(result);
 				}
 			}
 

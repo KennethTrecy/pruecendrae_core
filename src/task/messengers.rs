@@ -70,7 +70,7 @@ mod t {
 	#[test]
 	pub fn can_request_success_kill() {
 		let task = create_task(request::KILL_SUCCESS);
-		let expected_reponse = Response::Killed(Ok(()));
+		let expected_reponse = Response::Kill(Ok(()));
 
 		task.send_request(Request::Kill).unwrap();
 		let response = task.receive_response();
