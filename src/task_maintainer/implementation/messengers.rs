@@ -23,6 +23,7 @@ impl<'a> TaskMaintainer<'a> {
 			MaintainerRequest::Output(max_output_size, names) => request!{
 				for each names, Output with max_output_size
 			},
+			MaintainerRequest::Check(names) => request!{for each names, Check},
 			_ => { todo!() }
 		}
 	}
@@ -62,6 +63,9 @@ impl<'a> TaskMaintainer<'a> {
 				Output with response
 				that will be classified as either one of the successes or failures
 			},
+			MaintainerResponse::Check(mut successes, mut failures) => receive_other!{
+				Check that will be classified as either one of the successes or failures
+			},
 			_ => todo!()
 		}
 
@@ -98,5 +102,23 @@ mod t {
 				(task_names[0], FAKE_OUTPUT_CONTENT.into_iter().cycle().take(max_output_size).collect())
 			],
 			vec![task_names[1]]));
+	}
+
+	macro_rules! expected_response {
+		($response_name:ident) => {
+			Response::$response_name(vec![&b"success"[..]], vec![&b"failure"[..]])
+		};
+	}
+
+	#[test]
+	fn can_receive_check_response() {
+		let (maintainer, task_names) = create_maintainer(
+			request::CHECK_SUCCESS,
+			request::CHECK_FAILURE);
+
+		maintainer.send_request(Request::Check(task_names.clone()));
+		let response = maintainer.receive_response(task_names.clone());
+
+		assert_eq!(response, expected_response!(Check));
 	}
 }

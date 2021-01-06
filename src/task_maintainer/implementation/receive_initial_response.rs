@@ -14,16 +14,18 @@ impl<'a> TaskMaintainer<'a> {
 
 					macro_rules! receive_initial_reponse {
 						($response_name:ident $content:ident $(with $response:ident)?) => {
-							let mut successful_responses = Vec::new();
-							let mut failed_responses = Vec::new();
+							{
+								let mut successful_responses = Vec::new();
+								let mut failed_responses = Vec::new();
 
-							classify!{
-								the name using its $content $(with $response)?
-								as either one of successful_responses or failed_responses
+								classify!{
+									the name using its $content $(with $response)?
+									as either one of successful_responses or failed_responses
+								}
+
+								response = MaintainerResponse::$response_name(
+									successful_responses, failed_responses);
 							}
-
-							response = MaintainerResponse::$response_name(
-								successful_responses, failed_responses);
 						};
 					}
 
@@ -31,6 +33,7 @@ impl<'a> TaskMaintainer<'a> {
 						TaskResponse::Output(content) => {
 							receive_initial_reponse!(Output content with response);
 						},
+						TaskResponse::Check(content) => receive_initial_reponse!{Check content},
 						_ => todo!()
 					}
 
