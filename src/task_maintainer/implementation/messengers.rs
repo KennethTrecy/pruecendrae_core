@@ -5,12 +5,12 @@ use super::TaskMaintainer;
 impl<'a> TaskMaintainer<'a> {
 	pub fn send_request(&self, request_type: MaintainerRequest<'a>) {
 		macro_rules! request {
-			(for each $names:ident, $name:ident with $($arguments:ident)*) => {
+			(for each $names:ident, $name:ident $(with $($arguments:ident)+)?) => {
 				{
 					for name in $names {
 						if self.tasks.contains_key(name) {
 							let task = self.tasks.get(name).unwrap();
-							task.send_request(TaskRequest::$name($($arguments,)*)).unwrap();
+							task.send_request(TaskRequest::$name$(($($arguments,)*))?).unwrap();
 						} else {
 							todo!()
 						}
