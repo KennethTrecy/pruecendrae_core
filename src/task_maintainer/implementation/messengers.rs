@@ -24,6 +24,7 @@ impl<'a> TaskMaintainer<'a> {
 				for each names, Output with max_output_size
 			},
 			MaintainerRequest::Check(names) => request!{for each names, Check},
+			MaintainerRequest::Stop(names) => request!{for each names, Stop},
 			_ => { todo!() }
 		}
 	}
@@ -65,6 +66,9 @@ impl<'a> TaskMaintainer<'a> {
 			},
 			MaintainerResponse::Check(mut successes, mut failures) => receive_other!{
 				Check that will be classified as either one of the successes or failures
+			},
+			MaintainerResponse::Stop(mut successes, mut failures) => receive_other!{
+				Stop that will be classified as either one of the successes or failures
 			},
 			_ => todo!()
 		}
@@ -120,5 +124,17 @@ mod t {
 		let response = maintainer.receive_response(task_names.clone());
 
 		assert_eq!(response, expected_response!(Check));
+	}
+
+	#[test]
+	fn can_receive_stop_response() {
+		let (maintainer, task_names) = create_maintainer(
+			request::STOP_SUCCESS,
+			request::STOP_FAILURE);
+
+		maintainer.send_request(Request::Stop(task_names.clone()));
+		let response = maintainer.receive_response(task_names.clone());
+
+		assert_eq!(response, expected_response!(Stop));
 	}
 }

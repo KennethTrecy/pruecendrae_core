@@ -34,6 +34,7 @@ impl<'a> TaskMaintainer<'a> {
 							receive_initial_reponse!(Output content with response);
 						},
 						TaskResponse::Check(content) => receive_initial_reponse!{Check content},
+						TaskResponse::Stop(content) => receive_initial_reponse!{Stop content},
 						_ => todo!()
 					}
 
