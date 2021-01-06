@@ -5,24 +5,31 @@ use super::TaskMaintainer;
 impl<'a> TaskMaintainer<'a> {
 	pub(super) fn receive_initial_response(&self, names: &Vec<&'a [u8]>) -> MaintainerResponse<'a> {
 		let mut name_iterator = names.iter();
+
 		loop {
 			let name = name_iterator.next();
-			if let Some(_) = name {
-				let name = name.unwrap();
-				if self.tasks.contains_key(name) {
-					let task = self.tasks.get(name).unwrap();
+			if let Some(&name) = name {
+				if let Some(task) = self.tasks.get(name) {
 					let response;
-					match task.receive_response() {
-						TaskResponse::Output(content) => {
+
+					macro_rules! receive_initial_reponse {
+						($response_name:ident $content:ident $(with $response:ident)?) => {
 							let mut successful_responses = Vec::new();
 							let mut failed_responses = Vec::new();
 
-							match content {
-								Ok(response) => successful_responses.push((*name, response)),
-								Err(()) => failed_responses.push(*name)
+							classify!{
+								the name using its $content $(with $response)?
+								as either one of successful_responses or failed_responses
 							}
 
-							response = MaintainerResponse::Output(successful_responses, failed_responses);
+							response = MaintainerResponse::$response_name(
+								successful_responses, failed_responses);
+						};
+					}
+
+					match task.receive_response() {
+						TaskResponse::Output(content) => {
+							receive_initial_reponse!(Output content with response);
 						},
 						_ => todo!()
 					}
