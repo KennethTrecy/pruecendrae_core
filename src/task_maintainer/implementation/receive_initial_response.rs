@@ -1,5 +1,5 @@
-use crate::{Request as MaintainerRequest, Response as MaintainerResponse};
-use crate::task::{Request as TaskRequest, Response as TaskResponse};
+use crate::Response as MaintainerResponse;
+use crate::task::Response as TaskResponse;
 use super::TaskMaintainer;
 
 impl<'a> TaskMaintainer<'a> {
@@ -50,9 +50,9 @@ impl<'a> TaskMaintainer<'a> {
 
 #[cfg(test)]
 mod t {
+	use crate::Request;
 	use crate::process::fake_process::{FAKE_OUTPUT_CONTENT, request};
-
-	use super::{MaintainerRequest as Request, MaintainerResponse as Response, TaskMaintainer};
+	use super::{MaintainerResponse as Response, TaskMaintainer};
 
 	#[test]
 	fn can_receive_initial_response() {
