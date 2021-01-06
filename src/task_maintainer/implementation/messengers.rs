@@ -29,25 +29,59 @@ impl<'a> TaskMaintainer<'a> {
 
 	pub fn receive_response(&self, names: Vec<&'a [u8]>) -> MaintainerResponse<'a> {
 		let mut response = self.receive_initial_response(&names);
-		match response {
-			MaintainerResponse::Output(mut successes, mut failures) => {
-				let mut has_skipped_initial_output = false;
-				for name in names {
-					if let Some(task) = self.tasks.get(name) {
-						if has_skipped_initial_output {
-							if let TaskResponse::Output(content) = task.receive_response() {
-								match content {
-									Ok(response) => successes.push((name, response)),
-									Err(()) => failures.push(name)
+
+		macro_rules! classify {
+			(
+				the $name:ident using its $content:ident
+				as either one of $successes:ident or $failures:ident
+			) => {
+				match $content {
+					Ok(()) => $successes.push($name),
+					Err(()) => $failures.push($name)
+				}
+			};
+			(
+				the $name:ident using its $content:ident with $response:ident
+				as either one of $successes:ident or $failures:ident
+			) => {
+				match $content {
+					Ok($response) => $successes.push(($name, $response)),
+					Err(()) => $failures.push($name)
+				}
+			};
+		}
+
+		macro_rules! receive_other {
+			(
+				$response_name:ident $(with $response:ident)?
+				that will be classified as either one of the $successes:ident or $failures:ident
+			) => {
+				{
+					let mut has_skipped_initial_output = false;
+					for name in names {
+						if let Some(task) = self.tasks.get(name) {
+							if has_skipped_initial_output {
+								if let TaskResponse::$response_name(content) = task.receive_response() {
+									classify!{
+										the name using its content $(with $response)?
+										as either one of $successes or $failures
+									};
 								}
+							} else {
+								has_skipped_initial_output = true;
 							}
-						} else {
-							has_skipped_initial_output = true;
 						}
 					}
-				}
 
-				response = MaintainerResponse::Output(successes, failures);
+					response = MaintainerResponse::$response_name($successes, $failures);
+				}
+			};
+		}
+
+		match response {
+			MaintainerResponse::Output(mut successes, mut failures) => receive_other!{
+				Output with response
+				that will be classified as either one of the successes or failures
 			},
 			_ => todo!()
 		}
