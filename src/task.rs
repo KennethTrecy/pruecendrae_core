@@ -24,6 +24,7 @@ pub struct Task<'a> {
 }
 
 mod messengers;
+mod join;
 
 use crate::task::command::{create_thread, parse};
 
