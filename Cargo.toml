@@ -3,11 +3,3 @@ name = "pruecendrae_core"
 version = "0.1.0-dev"
 authors = ["Kenneth Trecy Tobias <33564322+KennethTrecy@users.noreply.github.com>"]
 edition = "2018"
-
-[dependencies]
-hidden_dependencies = { path = "hidden_dependencies" }
-
-[workspace]
-members = [
-	"hidden_dependencies"
-]
