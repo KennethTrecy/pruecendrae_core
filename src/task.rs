@@ -15,8 +15,7 @@ pub use request::Request;
 pub use response::Response;
 
 /// Represents a task that can be stored and managed.
-pub struct Task<'a> {
-	command: &'a [u8],
+pub struct Task {
 	thread: JoinHandle<()>,
 	sender: Sender<Request>,
 	receiver: Receiver<Response>
@@ -27,19 +26,18 @@ mod join;
 
 use crate::task::command::{create_thread, parse};
 
-impl<'a> Task<'a> {
+impl Task {
 	/// Creates a Task and runs the command.
-	pub fn new(command: &'a [u8]) -> Self {
+	pub fn new(command: &[u8]) -> Self {
 		let (thread, sender, receiver) = Self::run_command(command);
 		Self {
-			command,
 			thread,
 			sender,
 			receiver
 		}
 	}
 
-	fn run_command(command: &'a [u8]) -> (JoinHandle<()>, Sender<Request>, Receiver<Response>) {
+	fn run_command(command: &[u8]) -> (JoinHandle<()>, Sender<Request>, Receiver<Response>) {
 		let (program, arguments) = parse(command);
 		let thread = create_thread(program, arguments);
 		thread

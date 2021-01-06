@@ -3,7 +3,7 @@ use crate::task::request::Request;
 use crate::task::response::Response;
 use super::Task;
 
-impl<'a> Task<'a> {
+impl Task {
 	pub fn send_request(&self, request: Request) -> Result<(), SendError<Request>> {
 		self.sender.send(request)
 	}

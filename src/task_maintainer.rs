@@ -8,7 +8,7 @@ mod response;
 
 /// Maintains a collection of tasks.
 pub struct TaskMaintainer<'a> {
-	tasks: HashMap<&'a [u8], Task<'a>>
+	tasks: HashMap<&'a [u8], Task>
 }
 
 mod implementation;

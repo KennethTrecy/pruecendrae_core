@@ -1,7 +1,7 @@
 use std::thread::Result;
 use super::Task;
 
-impl<'a> Task<'a> {
+impl Task {
 	/// Joins the thread of the task. However, a kill request must be sent first.
 	pub fn join(self) -> Result<()> {
 		self.thread.join()
