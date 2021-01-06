@@ -16,7 +16,7 @@ mod t {
 
 	#[test]
 	pub fn can_join_after_kill() {
-		let task = Task::new(b"test", request::KILL_SUCCESS.as_bytes());
+		let task = Task::new(request::KILL_SUCCESS.as_bytes());
 		let expected_reponse = Response::Kill(Ok(()));
 
 		task.send_request(Request::Kill).unwrap();

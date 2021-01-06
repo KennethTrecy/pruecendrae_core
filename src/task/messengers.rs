@@ -18,7 +18,7 @@ mod t {
 	use crate::process::fake_process::{FAKE_OUTPUT_CONTENT, request};
 	use super::{Request, Response, Task};
 
-	fn create_task(command: &str) -> Task { Task::new(b"test", command.as_bytes()) }
+	fn create_task(command: &str) -> Task { Task::new(command.as_bytes()) }
 
 	#[test]
 	pub fn can_request_output_success() {

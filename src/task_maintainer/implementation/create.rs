@@ -4,7 +4,7 @@ use super::TaskMaintainer;
 impl<'a> TaskMaintainer<'a> {
 	/// Creates a task and adds to the collection.
 	pub fn create(&mut self, name: &'a [u8], command: &'a [u8]) -> Result<(), ()> {
-		let task = Task::new(name, command);
+		let task = Task::new(command);
 		if self.tasks.contains_key(name) {
 			Err(())
 		} else {
