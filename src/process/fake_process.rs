@@ -11,7 +11,8 @@ pub mod request {
 	pub const CHECK_FAILURE: &'static str = "request check_failure";
 	pub const OUTPUT_SUCCESS: &'static str = "request output_success";
 	pub const OUTPUT_FAILURE: &'static str = "request output_failure";
-	pub const KILL_SUCCESS: &'static str = "request kill";
+	pub const KILL_SUCCESS: &'static str = "request kill_success";
+	pub const KILL_FAILURE: &'static str = "request kill_failure";
 }
 
 /// Represents the fake process
