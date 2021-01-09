@@ -103,21 +103,38 @@ mod t {
 		(maintainer, task_names)
 	}
 
-	#[test]
-	fn can_receive_output_response() {
-		let (maintainer, task_names) = create_maintainer(
-			request::OUTPUT_SUCCESS,
-			request::OUTPUT_FAILURE);
-		let max_output_size = 30;
+	macro_rules! test {
+		(
+			$test_name:ident
+			with $($value:literal as $name:ident,)? $success:ident and $failure:ident
+			used in $response_name:ident
+			expecting $expected_response:expr
+		) => {
+			#[test]
+			fn $test_name() {
+				let (maintainer, task_names) = create_maintainer(
+					request::$success,
+					request::$failure);
+				$(let $name = $value;)*
 
-		maintainer.send_request(Request::Output(max_output_size, task_names.clone()));
-		let response = maintainer.receive_response(task_names.clone());
+				maintainer.send_request(Request::$response_name($($name,)* task_names.clone()));
+				let response = maintainer.receive_response(task_names.clone());
 
-		assert_eq!(response, Response::Output(
+				assert_eq!(response, $expected_response);
+			}
+		};
+	}
+
+	test!{
+		can_receive_output_response
+		with 30 as max_output_size, OUTPUT_SUCCESS and OUTPUT_FAILURE
+		used in Output
+		expecting Response::Output(
 			vec![
-				(task_names[0], FAKE_OUTPUT_CONTENT.into_iter().cycle().take(max_output_size).collect())
+				("success", FAKE_OUTPUT_CONTENT.into_iter().cycle().take(max_output_size).collect())
 			],
-			vec![task_names[1]]));
+			vec!["failure"]
+		)
 	}
 
 	macro_rules! expected_response {
@@ -126,27 +143,17 @@ mod t {
 		};
 	}
 
-	#[test]
-	fn can_receive_check_response() {
-		let (maintainer, task_names) = create_maintainer(
-			request::CHECK_SUCCESS,
-			request::CHECK_FAILURE);
-
-		maintainer.send_request(Request::Check(task_names.clone()));
-		let response = maintainer.receive_response(task_names.clone());
-
-		assert_eq!(response, expected_response!(Check));
+	test!{
+		can_receive_check_response
+		with CHECK_SUCCESS and CHECK_FAILURE
+		used in Check
+		expecting expected_response!(Check)
 	}
 
-	#[test]
-	fn can_receive_stop_response() {
-		let (maintainer, task_names) = create_maintainer(
-			request::STOP_SUCCESS,
-			request::STOP_FAILURE);
-
-		maintainer.send_request(Request::Stop(task_names.clone()));
-		let response = maintainer.receive_response(task_names.clone());
-
-		assert_eq!(response, expected_response!(Stop));
+	test!{
+		can_receive_stop_response
+		with STOP_SUCCESS and STOP_FAILURE
+		used in Stop
+		expecting expected_response!(Stop)
 	}
 }
