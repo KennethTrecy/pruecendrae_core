@@ -3,6 +3,8 @@ pub const FAKE_OUTPUT_CONTENT: Range<u8> = ('a' as u8)..('z' as u8);
 
 pub mod request {
 	pub const PROGRAM: &'static str = "request";
+	pub const START_SUCCESS: &'static str = "request start_success";
+	pub const START_FAILURE: &'static str = "request start_failure";
 	pub const STOP_SUCCESS: &'static str = "request stop_success";
 	pub const STOP_FAILURE: &'static str = "request stop_failure";
 	pub const CHECK_SUCCESS: &'static str = "request check_success";
