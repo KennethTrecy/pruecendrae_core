@@ -28,9 +28,9 @@ impl TaskMaintainer {
 				for each names, Output with max_output_size
 			},
 			MaintainerRequest::Check(names) => request!{for each names, Check},
-			MaintainerRequest::Start(_names) => { todo!() },
+			MaintainerRequest::Start(names) => request!{for each names, Start},
 			MaintainerRequest::Stop(names) => request!{for each names, Stop},
-			MaintainerRequest::Kill(_names) => { todo!() }
+			MaintainerRequest::Kill(names) => request!{for each names, Kill}
 		}
 
 		requested_names
@@ -74,14 +74,14 @@ impl TaskMaintainer {
 			MaintainerResponse::Check(mut successes, mut failures) => receive_other!{
 				Check that will be classified as either one of the successes or failures
 			},
-			MaintainerResponse::Start(mut _successes, mut _failures) => {
-				todo!()
+			MaintainerResponse::Start(mut successes, mut failures) => receive_other!{
+				Start that will be classified as either one of the successes or failures
 			},
 			MaintainerResponse::Stop(mut successes, mut failures) => receive_other!{
 				Stop that will be classified as either one of the successes or failures
 			},
-			MaintainerResponse::Kill(mut _successes, mut _failures) => {
-				todo!()
+			MaintainerResponse::Kill(mut successes, mut failures) => receive_other!{
+				Kill that will be classified as either one of the successes or failures
 			}
 		}
 
@@ -105,12 +105,13 @@ mod t {
 
 	macro_rules! test {
 		(
-			$test_name:ident
+			$test_name:ident $(but $attribute:ident)?
 			with $($value:literal as $name:ident,)? $success:ident and $failure:ident
 			used in $response_name:ident
 			expecting $expected_response:expr
 		) => {
 			#[test]
+			$(#[$attribute])?
 			fn $test_name() {
 				let (maintainer, task_names) = create_maintainer(
 					request::$success,
@@ -151,9 +152,24 @@ mod t {
 	}
 
 	test!{
+		can_receive_start_response but ignore
+		with START_SUCCESS and START_FAILURE
+		used in Start
+		expecting expected_response!(Start)
+	}
+
+	test!{
 		can_receive_stop_response
 		with STOP_SUCCESS and STOP_FAILURE
 		used in Stop
 		expecting expected_response!(Stop)
+	}
+
+	test!{
+		can_receive_kill_response but ignore
+		with KILL_SUCCESS and KILL_FAILURE
+		used in Kill
+		expecting expected_response!(Kill)
+
 	}
 }
