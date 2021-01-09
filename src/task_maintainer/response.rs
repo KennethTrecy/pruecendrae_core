@@ -14,7 +14,7 @@ impl<'a> From<Response<'a>> for String {
 				if $units.len() > 0 {
 					$response += &format!("\t{}\n", $group);
 					for unit in $units {
-						$response += &format!("\t\t{}\n", unit);
+						$response += &format!("\t\t{}|\n", unit);
 					}
 				}
 			};
@@ -87,18 +87,18 @@ mod t {
 		from Output(vec![("task A", b"task A contents".to_vec())], vec!["task B"])
 		to "output\n\tsuccesses\n\t\ttask A
 			===\ntask A contents
-			===\n\tfailures\n\t\ttask B\n"
+			===\n\tfailures\n\t\ttask B|\n"
 	}
 
 	test!{
 		can_convert_stop
 		from Stop(vec!["task C", "task D"], vec!["task E"])
-		to "stop\n\tsuccesses\n\t\ttask C\n\t\ttask D\n\tfailures\n\t\ttask E\n"
+		to "stop\n\tsuccesses\n\t\ttask C|\n\t\ttask D|\n\tfailures\n\t\ttask E|\n"
 	}
 
 	test!{
 		can_convert_check
 		from Check(vec!["task F"], vec!["task G", "task H"])
-		to "check\n\tsuccesses\n\t\ttask F\n\tfailures\n\t\ttask G\n\t\ttask H\n"
+		to "check\n\tsuccesses\n\t\ttask F|\n\tfailures\n\t\ttask G|\n\t\ttask H|\n"
 	}
 }
