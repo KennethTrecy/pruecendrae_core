@@ -1,14 +1,14 @@
 use crate::Task;
 use super::TaskMaintainer;
 
-impl<'a> TaskMaintainer<'a> {
+impl TaskMaintainer {
 	/// Creates a task and adds to the collection.
-	pub fn create(&mut self, name: &'a [u8], command: &'a [u8]) -> Result<(), ()> {
+	pub fn create(&mut self, name: &str, command: &[u8]) -> Result<(), ()> {
 		let task = Task::new(command);
 		if self.tasks.contains_key(name) {
 			Err(())
 		} else {
-			self.tasks.insert(name, task);
+			self.tasks.insert(String::from(name), task);
 			Ok(())
 		}
 	}
@@ -22,7 +22,7 @@ mod t {
 	fn can_create_new_task() {
 		let mut maintainer = TaskMaintainer::new();
 
-		let result = maintainer.create(b"new task", b"task a");
+		let result = maintainer.create("new task", b"task a");
 
 		assert_eq!(result, Ok(()));
 	}
@@ -30,9 +30,9 @@ mod t {
 	#[test]
 	fn cannot_recreate_same_task() {
 		let mut maintainer = TaskMaintainer::new();
-		maintainer.create(b"same task name", b"task b").unwrap();
+		maintainer.create("same task name", b"task b").unwrap();
 
-		let result = maintainer.create(b"same task name", b"task b");
+		let result = maintainer.create("same task name", b"task b");
 
 		assert_eq!(result, Err(()));
 	}

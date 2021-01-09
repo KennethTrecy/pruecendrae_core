@@ -1,7 +1,8 @@
+#[derive(Debug, PartialEq)]
 pub enum Request<'a> {
-	Output(usize, Vec<&'a [u8]>),
-	Start(Vec<&'a [u8]>),
-	Check(Vec<&'a [u8]>),
-	Stop(Vec<&'a [u8]>),
-	Kill(Vec<&'a [u8]>)
+	Output(usize, Vec<&'a str>),
+	Start(Vec<&'a str>),
+	Check(Vec<&'a str>),
+	Stop(Vec<&'a str>),
+	Kill(Vec<&'a str>)
 }

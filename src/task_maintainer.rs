@@ -7,8 +7,8 @@ mod request;
 mod response;
 
 /// Maintains a collection of tasks.
-pub struct TaskMaintainer<'a> {
-	tasks: HashMap<&'a [u8], Task>
+pub struct TaskMaintainer {
+	tasks: HashMap<String, Task>
 }
 
 mod implementation;
@@ -16,7 +16,7 @@ mod implementation;
 pub use request::Request;
 pub use response::Response;
 
-impl<'a> TaskMaintainer<'a> {
+impl TaskMaintainer {
 	pub fn new() -> Self {
 		Self { tasks: HashMap::new() }
 	}

@@ -2,8 +2,9 @@ use crate::Response as MaintainerResponse;
 use crate::task::Response as TaskResponse;
 use super::TaskMaintainer;
 
-impl<'a> TaskMaintainer<'a> {
-	pub(super) fn receive_initial_response(&self, names: &Vec<&'a [u8]>) -> MaintainerResponse<'a> {
+impl TaskMaintainer {
+	pub(super) fn receive_initial_response<'a>(&self, names: &Vec<&'a str>)
+	-> MaintainerResponse<'a> {
 		let mut name_iterator = names.iter();
 
 		loop {
@@ -56,7 +57,7 @@ mod t {
 
 	#[test]
 	fn can_receive_initial_response() {
-		let task_names = vec![&b"request a"[..], &b"request b"[..], &b"request c"[..]];
+		let task_names = vec!["request a", "request b", "request c"];
 		let max_output_size = 20;
 		let mut maintainer = TaskMaintainer::new();
 		maintainer.create(task_names[0], request::OUTPUT_SUCCESS.as_bytes()).unwrap();

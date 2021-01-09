@@ -1,8 +1,8 @@
 #[cfg_attr(test, derive(Debug, PartialEq))]
 pub enum Response<'a> {
-	Output(Vec<(&'a [u8], Vec<u8>)>, Vec<&'a [u8]>),
-	Start(Vec<&'a [u8]>, Vec<&'a [u8]>),
-	Check(Vec<&'a [u8]>, Vec<&'a [u8]>),
-	Stop(Vec<&'a [u8]>, Vec<&'a [u8]>),
-	Kill(Vec<&'a [u8]>, Vec<&'a [u8]>)
+	Output(Vec<(&'a str, Vec<u8>)>, Vec<&'a str>),
+	Start(Vec<&'a str>, Vec<&'a str>),
+	Check(Vec<&'a str>, Vec<&'a str>),
+	Stop(Vec<&'a str>, Vec<&'a str>),
+	Kill(Vec<&'a str>, Vec<&'a str>)
 }

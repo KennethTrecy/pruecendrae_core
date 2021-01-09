@@ -2,13 +2,17 @@ use crate::{Request as MaintainerRequest, Response as MaintainerResponse};
 use crate::task::{Request as TaskRequest, Response as TaskResponse};
 use super::TaskMaintainer;
 
-impl<'a> TaskMaintainer<'a> {
-	pub fn send_request(&self, request_type: MaintainerRequest<'a>) {
+impl TaskMaintainer {
+	pub fn send_request<'a>(&self, request_type: MaintainerRequest<'a>) -> Vec<&'a str> {
+		let mut requested_names;
+
 		macro_rules! request {
 			(for each $names:ident, $name:ident $(with $($arguments:ident)+)?) => {
 				{
+					requested_names = Vec::with_capacity($names.len());
 					for name in $names {
 						if self.tasks.contains_key(name) {
+							requested_names.push(name);
 							let task = self.tasks.get(name).unwrap();
 							task.send_request(TaskRequest::$name$(($($arguments,)*))?).unwrap();
 						} else {
@@ -28,9 +32,11 @@ impl<'a> TaskMaintainer<'a> {
 			MaintainerRequest::Stop(names) => request!{for each names, Stop},
 			MaintainerRequest::Kill(_names) => { todo!() }
 		}
+
+		requested_names
 	}
 
-	pub fn receive_response(&self, names: Vec<&'a [u8]>) -> MaintainerResponse<'a> {
+	pub fn receive_response<'a>(&self, names: Vec<&'a str>) -> MaintainerResponse<'a> {
 		let mut response = self.receive_initial_response(&names);
 
 		macro_rules! receive_other {
@@ -89,8 +95,8 @@ mod t {
 	use super::{MaintainerRequest as Request, MaintainerResponse as Response, TaskMaintainer};
 
 	fn create_maintainer<'a>(fake_success: &'a str, fake_failure: &'a str)
-	-> (TaskMaintainer<'a>, Vec<&'a [u8]>) {
-		let task_names = vec![&b"success"[..], &b"failure"[..]];
+	-> (TaskMaintainer, Vec<&'a str>) {
+		let task_names = vec!["success", "failure"];
 		let mut maintainer = TaskMaintainer::new();
 		maintainer.create(task_names[0], fake_success.as_bytes()).unwrap();
 		maintainer.create(task_names[1], fake_failure.as_bytes()).unwrap();
@@ -116,7 +122,7 @@ mod t {
 
 	macro_rules! expected_response {
 		($response_name:ident) => {
-			Response::$response_name(vec![&b"success"[..]], vec![&b"failure"[..]])
+			Response::$response_name(vec!["success"], vec!["failure"])
 		};
 	}
 
