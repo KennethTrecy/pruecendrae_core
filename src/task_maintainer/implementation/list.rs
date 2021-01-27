@@ -2,8 +2,8 @@ use super::TaskMaintainer;
 
 impl TaskMaintainer {
 	/// Lists the stored tasks
-	pub fn list(&self) -> Vec<&str> {
-		self.tasks.keys().map(|string| string.as_str()).collect()
+	pub fn list(&self) -> Vec<(&str, &str)> {
+		self.tasks.iter().map(|(name, task)| (name.as_str(), task.command())).collect()
 	}
 }
 
@@ -19,6 +19,9 @@ mod t {
 
 		let keys = maintainer.list();
 
-		assert_eq!(keys, vec!["new task c", "new task d"]);
+		assert_eq!(keys, vec![
+			("new task c", "task c"),
+			("new task d", "task d")
+		]);
 	}
 }
