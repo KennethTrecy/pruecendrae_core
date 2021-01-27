@@ -16,6 +16,7 @@ pub use response::Response;
 
 /// Represents a task that can be stored and managed.
 pub struct Task {
+	command: String,
 	thread: JoinHandle<()>,
 	sender: Sender<Request>,
 	receiver: Receiver<Response>
@@ -30,12 +31,16 @@ impl Task {
 	/// Creates a Task and runs the command.
 	pub fn new(command: &[u8]) -> Self {
 		let (thread, sender, receiver) = Self::run_command(command);
+		let command = String::from_utf8(command.to_vec()).unwrap();
 		Self {
+			command,
 			thread,
 			sender,
 			receiver
 		}
 	}
+
+	pub fn command(&self) -> &str { &self.command }
 
 	fn run_command(command: &[u8]) -> (JoinHandle<()>, Sender<Request>, Receiver<Response>) {
 		let (program, arguments) = parse(command);
