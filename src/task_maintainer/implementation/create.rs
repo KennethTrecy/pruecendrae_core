@@ -36,6 +36,4 @@ mod t {
 
 		assert_eq!(result, Err(()));
 	}
-
-
 }
