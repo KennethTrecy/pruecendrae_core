@@ -1,8 +1,6 @@
-// When being tested, the imports at line 4, and parameters at line 5, are being marked as unused.
-// Using the attribute below, it will remove the warnings.
-#![allow(unused_imports, unused_variables)]
+#[cfg(not(test))]
+use std::process::{Command, Stdio};
 
-use std::process::{Child, Command, Stdio};
 use crate::process::Process;
 
 #[cfg(test)]
