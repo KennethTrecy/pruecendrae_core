@@ -1,5 +1,8 @@
 [package]
 name = "pruecendrae_core"
 version = "0.2.0-dev"
-authors = ["Kenneth Trecy Tobias <33564322+KennethTrecy@users.noreply.github.com>"]
-edition = "2018"
+authors = ["Kenneth Trecy Tobias <web.kennethtobias@gmail.com>"]
+edition = "2021"
+
+[features]
+default = []

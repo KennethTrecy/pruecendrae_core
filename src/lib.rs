@@ -1,3 +1,6 @@
+//! # Feo Template
+//! Please read the README.md for more information.
+
 /// Contains the `Task` struct to run commands.
 mod task;
 
