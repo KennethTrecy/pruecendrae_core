@@ -14,8 +14,8 @@ mod t {
 	#[test]
 	fn can_list_tasks() {
 		let mut maintainer = TaskMaintainer::new();
-		maintainer.create("new task c", b"task c").unwrap();
 		maintainer.create("new task d", b"task d").unwrap();
+		maintainer.create("new task c", b"task c").unwrap();
 
 		let keys = maintainer.list();
 
