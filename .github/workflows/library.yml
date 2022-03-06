@@ -1,0 +1,25 @@
+name: Library
+
+on:
+  push: []
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - review_requested
+    branches:
+      - master
+    paths:
+      - 'src/**'
+
+jobs:
+  library_tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - name: Test all features
+        uses: actions-rs/cargo@v1
+        with:
+          command: test
+          args: --all-features

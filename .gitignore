@@ -1,0 +1,8 @@
+.vscode
+!/.vscode
+
+.env
+/target
+Cargo.lock
+
+*hidden*
