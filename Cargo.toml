@@ -1,6 +1,6 @@
 [package]
 name = "pruecendrae_core"
-version = "0.2.0-rc.0"
+version = "0.2.0-dev"
 authors = ["Kenneth Trecy Tobias <web.kennethtobias@gmail.com>"]
 edition = "2021"
 
